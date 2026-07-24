@@ -3,10 +3,9 @@ from typing import Any
 from griptape_nodes.common.macro_parser.core import ParsedMacro
 from griptape_nodes.common.macro_parser.exceptions import MacroResolutionError, MacroSyntaxError
 from griptape_nodes.exe_types.core_types import ParameterMode
-from griptape_nodes.exe_types.param_types.parameter_dict import ParameterDict
 from griptape_nodes.exe_types.node_types import SuccessFailureNode
+from griptape_nodes.exe_types.param_types.parameter_dict import ParameterDict
 from griptape_nodes.exe_types.param_types.parameter_string import ParameterString
-from griptape_nodes.retained_mode.griptape_nodes import GriptapeNodes
 
 
 class ResolveMacroTemplate(SuccessFailureNode):
