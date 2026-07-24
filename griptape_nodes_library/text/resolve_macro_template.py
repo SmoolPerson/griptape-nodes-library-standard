@@ -26,8 +26,7 @@ class ResolveMacroTemplate(SuccessFailureNode):
                 multiline=True,
                 placeholder_text="Hello, {name}! You have {count} messages.",
                 tooltip=(
-                    "The macro template string. Reference variables with braces "
-                    "(e.g. '{name}'). Optional variables use '{name?}'."
+                    "The macro template string. The macro language is described here: https://docs.griptapenodes.com/en/stable/guides/projects/macros/"
                 ),
             )
         )
