@@ -2,7 +2,8 @@ from typing import Any
 
 from griptape_nodes.common.macro_parser.core import ParsedMacro
 from griptape_nodes.common.macro_parser.exceptions import MacroResolutionError, MacroSyntaxError
-from griptape_nodes.exe_types.core_types import Parameter, ParameterMode
+from griptape_nodes.exe_types.core_types import ParameterMode
+from griptape_nodes.exe_types.param_types.parameter_dict import ParameterDict
 from griptape_nodes.exe_types.node_types import SuccessFailureNode
 from griptape_nodes.exe_types.param_types.parameter_string import ParameterString
 from griptape_nodes.retained_mode.griptape_nodes import GriptapeNodes
@@ -32,11 +33,10 @@ class ResolveMacroTemplate(SuccessFailureNode):
         )
 
         self.add_parameter(
-            Parameter(
+            ParameterDict(
                 name="variables",
                 allowed_modes={ParameterMode.INPUT, ParameterMode.PROPERTY},
-                type="dict",
-                default_value={},
+                default_value=None,
                 tooltip=(
                     "Dictionary of variable values. Each key is the variable name "
                     "used in the template; each value is the string (or int) to "
