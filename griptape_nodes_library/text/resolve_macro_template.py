@@ -77,7 +77,7 @@ class ResolveMacroTemplate(SuccessFailureNode):
             return
 
         try:
-            resolved = parsed.resolve(variables, GriptapeNodes.SecretsManager())
+            resolved = parsed.resolve(variables, secrets_manager=None)
         except MacroResolutionError as err:
             self._report_failure(f"Failed to resolve template. {err}", exception=err)
             return
