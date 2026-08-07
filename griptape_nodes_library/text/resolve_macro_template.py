@@ -16,7 +16,7 @@ from griptape_nodes_library.variables.variable_utils import get_variables, scope
 class VariableSource(StrEnum):
     """Where the node looks up template values, and in what precedence order.
 
-    The value drives branching in ``process()``, so the members are ordered from
+    The value drives branching in process(), so the members are ordered from
     "dictionary only" through to "Variables win".
     """
 
@@ -140,8 +140,7 @@ class ResolveMacroTemplate(SuccessFailureNode):
             variables = self._build_variables(parsed, coerced, source)
         except LookupError as err:
             self._report_failure(
-                f"Attempted to look up template variables in the workflow's Variables system. "
-                f"Failed due to: {err}",
+                f"Attempted to look up template variables in the workflow's Variables system. Failed due to: {err}",
                 exception=err,
             )
             return
@@ -167,12 +166,8 @@ class ResolveMacroTemplate(SuccessFailureNode):
     ) -> dict[str, str | int]:
         """Merge the coerced dictionary with the Variables system per the chosen precedence.
 
-        The dictionary is never mutated; a copy is returned. Both non-"Dictionary
-        only" modes share the same overlay (``merged.update(probed)``) and differ
-        only in which names they probe: dictionary-first probes only the names the
-        dictionary is missing (so the overlay just fills gaps), while Variables-first
-        probes every template name (so the overlay wins wherever a Variable resolves,
-        leaving dictionary entries for the misses).
+        The dictionary is never mutated; a copy is returned when values from the
+        Variables system are merged in.
 
         Raises:
             LookupError: If the Variables probe itself could not run.
@@ -184,27 +179,27 @@ class ResolveMacroTemplate(SuccessFailureNode):
         template_names = {variable.name for variable in parsed.get_variables()}
 
         if source is VariableSource.DICTIONARY_THEN_VARIABLES:
-            names_to_probe = [name for name in template_names if name not in coerced]
-        else:
-            names_to_probe = list(template_names)
+            missing_names = [name for name in template_names if name not in coerced]
+            variable_values = self._get_normalized_variables(missing_names, scope)
+            return {**variable_values, **coerced}
 
-        # GetVariablesRequest requires a non-empty name list; nothing to probe means
-        # the dictionary already covers every template variable.
-        if not names_to_probe:
-            return coerced
+        variable_values = self._get_normalized_variables(list(template_names), scope)
+        return {**coerced, **variable_values}
 
-        probed = get_variables(self.name, names_to_probe, scope)
+    def _get_normalized_variables(self, names: list[str], scope: VariableScope) -> dict[str, str | int]:
+        """Read selected workflow Variables and normalize their values for macro resolution."""
+        if not names:
+            return {}
 
-        merged = dict(coerced)
-        merged.update({name: self._normalize_variable_value(value) for name, value in probed.items()})
-        return merged
+        variables = get_variables(self.name, names, scope)
+        return {name: self._normalize_variable_value(value) for name, value in variables.items()}
 
     def _coerce_variables(self, raw_variables: Any) -> dict[str, str | int]:
         """Normalize the variables dict so ParsedMacro.resolve accepts it.
 
-        Keys become strings; ``str`` and ``int`` values pass through (keeping
-        format specs like ``{count:03}`` working). Everything else is
-        ``str()``-coerced.
+        Keys become strings; str and int values pass through (keeping
+        format specs like {count:03} working). Everything else is
+        str()-coerced.
         """
         return {str(key): self._normalize_variable_value(value) for key, value in raw_variables.items()}
 
