@@ -7,7 +7,10 @@ from griptape_nodes.exe_types.core_types import Parameter, ParameterGroup, Param
 from griptape_nodes.exe_types.node_types import SuccessFailureNode
 from griptape_nodes.exe_types.param_types.parameter_dict import ParameterDict
 from griptape_nodes.exe_types.param_types.parameter_string import ParameterString
-from griptape_nodes.retained_mode.events.workflow_events import SetVariableSubstitutionEnabledRequest, SetVariableSubstitutionEnabledResultFailure
+from griptape_nodes.retained_mode.events.workflow_events import (
+    SetVariableSubstitutionEnabledRequest,
+    SetVariableSubstitutionEnabledResultFailure,
+)
 from griptape_nodes.retained_mode.variable_types import VariableScope
 from griptape_nodes.traits.options import Options
 
@@ -134,10 +137,9 @@ class ResolveMacroTemplate(SuccessFailureNode):
 
         if isinstance(variable_substitution_status, SetVariableSubstitutionEnabledResultFailure):
             self._report_failure(
-                f"Failed to disable variable substitution. A common cause of this could be no active workflow context.",
+                "Failed to disable variable substitution. A common cause of this could be no active workflow context.",
             )
             return
-
 
         self._clear_execution_status()
 
